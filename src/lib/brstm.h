@@ -204,42 +204,10 @@ const char* brstm_getErrorString(unsigned char code) {
 
 //Used by brstm_fstream_read, return standard codec number from the number in the file
 unsigned int brstm_getStandardCodecNum(Brstm* brstmi,unsigned int num) {
-    switch(brstmi->file_format) {
-        case 0: {
-            //WAV (PCM16 only)
-            return 1;
-        }
-        case 1: case 6: {
-            //BRSTM, BRWAV
-            if(num < 3) {
-                return num;
-            }
-            return -1;
-        }
-        case 2: case 3: case 7: case 8: {
-            //BCSTM, BFSTM, BCWAV, BFWAV
-            if(num < 4) {
-                return num;
-            }
-            return -1;
-        }
-        case 4: {
-            //BWAV
-            if(num == 0) {
-                return 1;
-            } else if(num == 1) {
-                return 2;
-            }
-            return -1;
-        }
-        case 5: {
-            //ORSTM (doesn't exist)
-            return -1;
-        }
-        case 9: {
-            //IDSP (only DSPADPCM)
-            return 2;
-        }
+    if(num == 0) {
+        return 1;
+    } else if(num == 1) {
+        return 2;
     }
     return -1;
 }
@@ -297,7 +265,6 @@ unsigned char brstm_read(Brstm* brstmi,const unsigned char* fileData,signed int 
     brstmi->warn_realtime_decoding = 0;
     
     bool &BOM = brstmi->BOM;
-    unsigned char readres = 0;
     
     //Find filetype
     brstmi->file_format = BRSTM_formats_count;
@@ -314,40 +281,7 @@ unsigned char brstm_read(Brstm* brstmi,const unsigned char* fileData,signed int 
     
     if(debugLevel>0) std::cout << "File format: " << brstm_getShortFormatString(brstmi) << '\n';
     
-    if(brstmi->file_format == 0) {
-        //WAV
-        readres = brstm_formats_read_wav  (brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 1) {
-        //BRSTM
-        readres = brstm_formats_read_brstm(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 2) {
-        //BCSTM
-        readres = brstm_formats_read_bcstm(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 3) {
-        //BFSTM
-        readres = brstm_formats_read_bfstm(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 4) {
-        //BWAV
-        readres = brstm_formats_read_bwav (brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 5) {
-        //ORSTM
-        readres = brstm_formats_read_orstm(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 6) {
-        //BRWAV
-        readres = brstm_formats_read_brwav(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 7) {
-        //BCWAV
-        readres = brstm_formats_read_bcwav(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 8) {
-        //BFWAV
-        readres = brstm_formats_read_bfwav(brstmi,fileData,debugLevel,decodeAudio);
-    } else if(brstmi->file_format == 9) {
-        //IDSP
-        readres = brstm_formats_read_idsp (brstmi,fileData,debugLevel,decodeAudio);
-    } else {
-        if(debugLevel>=0) {std::cout << "Invalid or unsupported file format.\n";}
-        return 210;
-    }
+    unsigned char readres = brstm_formats_read_bwav (brstmi,fileData,debugLevel,decodeAudio);
     
     //Return now if a read error occurred
     if(readres>127) return readres;

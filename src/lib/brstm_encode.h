@@ -142,40 +142,7 @@ unsigned char brstm_encode(Brstm* brstmi, signed int debugLevel, uint8_t encodeA
         }
     }
     
-    unsigned char encres = 0;
-    
-    if(brstmi->file_format == 1) {
-        //BRSTM
-        encres = brstm_formats_encode_brstm(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 2) {
-        //BCSTM
-        encres = brstm_formats_encode_bcstm(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 3) {
-        //BFSTM
-        encres = brstm_formats_encode_bfstm(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 4) {
-        //BWAV
-        encres = brstm_formats_encode_bwav (brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 5) {
-        //ORSTM
-        encres = brstm_formats_encode_orstm(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 6) {
-        //BRWAV
-        encres = brstm_formats_encode_brwav(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 7) {
-        //BCWAV
-        encres = brstm_formats_encode_bcwav(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 8) {
-        //BFWAV
-        encres = brstm_formats_encode_bfwav(brstmi,debugLevel,encodeADPCM);
-    } else if(brstmi->file_format == 9) {
-        //IDSP
-        encres = brstm_formats_encode_idsp (brstmi,debugLevel,encodeADPCM);
-    } else {
-        //Invalid
-        if(debugLevel>=0) std::cout << "Invalid file format.\n";
-        return 210;
-    }
+    unsigned char encres = brstm_formats_encode_bwav (brstmi,debugLevel,encodeADPCM);
     
     return encres;
 }
