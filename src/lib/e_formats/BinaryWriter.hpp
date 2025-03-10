@@ -53,7 +53,6 @@ class BinaryWriter {
     void Write(std::span<T, Size> data) {
         size_t length = data.size_bytes();
         AssertPositionValid(m_Position + length);
-        T* it = reinterpret_cast<T*>(m_Data + m_Position);
         for(size_t i = 0; i < data.size(); i++) {
             Write<T>(data[i]);
         }
