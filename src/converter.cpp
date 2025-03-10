@@ -981,15 +981,53 @@ int main(int argc, char** args) {
             //Use custom byte order
             else res = brstm_encode(brstm,1,1,userEndian);
             
-            if(res>127) {
-                std::cout << "Encoding error. (" << (int)res << ")\n";
-                exit(res);
-            } else {
-                //Write output file
-                ofile.open(outputFileName,std::ios::out|std::ios::binary|std::ios::trunc);
-                if(!ofile.is_open()) {perror(outputFileName); exit(255);}
-                ofile.write((char*)brstm->encoded_file,brstm->encoded_file_size);
-                if(!ofile.good()) {perror(outputFileName); exit(255);}
+/*commented out so its still here for use :3 */
+//            if(res>127) {
+//                std::cout << "Encoding error. (" << (int)res << ")\n";
+//                exit(res);
+//            } else {
+//                //Write output file
+//                ofile.open(outputFileName,std::ios::out|std::ios::binary|std::ios::trunc);
+//                if(!ofile.is_open()) {perror(outputFileName); exit(255);}
+//                ofile.write((char*)brstm->encoded_file,brstm->encoded_file_size);
+//                if(!ofile.good()) {perror(outputFileName); exit(255);}
+
+            /*scuffed as hell this definitely doesnt work */
+               struct ByteSize {
+                    uint8_t* data;
+                    int size;
+                };
+
+                extern "C" __declspec(dllexport) ByteSize ReplacePlaceholderName() {
+                    // its already encoded so fuck it check for errors
+
+                    if(res>127) {
+                        std::cout << "Encoding error. (" << (int)res << ")\n";
+                        exit(res);
+                    }
+    
+                    // memory allocation attempt
+                    uint8_t* encodedBwav = new uint8_t[brstm->encoded_file_size];
+                    if(!encodedBwav) {
+                        std::cerr << "Memory allocation error\n"
+                        exit(255);
+                    }
+
+                    //copying the file to allocated memory...
+                    std::memcpy(encodedBwav, brstm->encoded_file, brstm->encoded_file_size);
+
+                    // return that thing
+                    ByteSize result;
+                    result.data = encodedBwav;
+                    result.size = brstm->encoded_file_size;
+                    return result;
+            
+
+                }
+
+                extern "C" __declspec(dllexport) void AlsoPlaceHolderName(ByteSize byteArray) {
+                    delete[] byteArray.data;
+                }
             }
         }
     }
